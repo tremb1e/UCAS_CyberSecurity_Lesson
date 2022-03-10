@@ -37,7 +37,7 @@ $ man capabilities
 - Namespaced file capabilities
 - Interaction with user namespaces
 
-![man7完整列表](./images/man7.org_linux_man-pages_man7_capabilities.7.html(iPad%20Air).png)
+![man7完整列表](./images/man7.org_linux_man-pages_man7_capabilities.7.html.png)
 
 ### 1.2 Capabilities list内容解释
 
