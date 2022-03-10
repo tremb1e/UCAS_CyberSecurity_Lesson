@@ -22,7 +22,7 @@
 
 ## 10.删除其他生成文件
 
-## 代码开源地址:https://github.com/Tremb1e/autocracking/blob/main/auto_tools.sh
+## 代码开源地址:https://github.com/Tremb1e/UCAS_CyberSecurity_Lesson/blob/main/WebSecurity/auto_tools.sh
 
 
 # 二.不使用工具的内网主机探测爆破脚本
@@ -45,4 +45,4 @@
 
 ## 8.删除多余生成文件、日志信息、修改最终得到的文件时间为系统创建时间
 
-## 代码开源地址:https://github.com/Tremb1e/autocracking/blob/main/auto_nontools.sh
+## 代码开源地址:https://github.com/Tremb1e/UCAS_CyberSecurity_Lesson/blob/main/WebSecurity/auto_nontools.sh
