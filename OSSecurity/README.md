@@ -132,81 +132,144 @@ $ man capabilities
 - Windows 11 Pro
 - WSL2
 - Docker Desktop
-- image:Ubuntu:latest
+- image: Ubuntu:latest
 
 ![docker_ubuntu](./images/docker_ubuntu.png)
 
 实验要求：
 
-- 在某用户登录时，规定其只具有某几种权能。
+- 在某用户登录时，规定其只具有某种权能，例如ping、passwd命令。
 
 实验流程：
 
 - 新建三个用户：os_ping,os_passwd,os_none
-- 找出并清除所有程序的权能
-- 编写shell脚本，实现三个用户登录后可以执行不同的命令
+- 运行auto_del_uid.sh脚本，找出并清除所有程序的权能
+- 运行login.sh脚本，实现三个用户登录后可以执行不同的命令
 - os_ping用户登录后只可以执行ping命令
 - os_passwd用户登录后只可以执行passwd命令
 - os_none登录后不可以执行任何命令
 
-### 配置环境
+### 配置环境（重要）
 
 容器为了最大程度减小镜像的大小，默认没有ping命令
 
 ```
-root@a47fedc193b8:/# apt clean
-root@a47fedc193b8:/# apt update
-root@a47fedc193b8:/# apt install iputils-ping
+root@56c79e554408:/# apt update
+root@56c79e554408:/# apt install iputils-ping
+# 为新安装的ping命令添加uid位
+root@56c79e554408:/# chmod u+s /usr/bin/ping
+
+# 添加用户
+root@56c79e554408:/# useradd os_ping
+root@56c79e554408:/# useradd os_passwd
+root@56c79e554408:/# useradd os_none
+
+# 选择no
+root@56c79e554408:/# dpkg-reconfigure dash
+
+root@56c79e554408:/# vim /etc/pam.d/common-session
+# 将下面这行命令写入 common-session 文件中
+session optional pam_exec.so debug log=/tmp/pam_exec.log seteuid /login.sh
 ```
 
-### 2.1 新建三个用户
+### 2.1 找出并清除所有程序的权能
 
-```
-root@a47fedc193b8:/# useradd os_ping
-root@a47fedc193b8:/# useradd os_passwd
-root@a47fedc193b8:/# useradd os_none
-```
+#### 2.1.1 找出所有程序的权能
 
-### 2.2 找出并清除所有程序的权能
+执行“auto_del_uid.sh”脚本，显示出设置了s位的程序列表
 
-#### 2.2.1 找出所有程序的权能
-
-```
-root@a47fedc193b8:/# find / -perm /u=s   #或 find / -perm -4000
-```
+并将其写入“/tmp/pro_list”文件中
 
 ![perm_all](./images/perm_all.png)
 
-#### 2.2.1 清除所有程序的权能
+查看“/tmp/pro_list”文件中的内容
 
+![pro_list](./images/pro_list.png)
 
+#### 2.1.2 清除所有程序的权能
 
-### 2.3 查看ping命令的权能
+按任意键继续程序，删除所有具有uid程序的权能
+
+![del_all_uid](./images/del_all_uid.png)
+
+### 2.2 查看ping、passwd命令的权能
+
+getcap命令查看ping、passwd命令的权能，显示为空
+
+![before](./images/before.png)
+
+### 2.3 切换用户，自动运行login.sh，实现用户登录只能运行特定程序
+
+- os_ping 用户只能运行 ping 命令
+- os_passwd 用户只能运行 passwd 命令
+- os_none 用户无法运行任何命令
+
+#### 2.3.1 os_ping 用户只能运行 ping 命令
+
+![os_ping](./images/os_ping.png)
+
+#### 2.3.2 os_passwd 用户只能运行 passwd 命令
+
+![os_passwd](./images/os_passwd.png)
+
+#### 2.3.3 os_none 用户无法运行任何命令
+
+![os_none](./images/os_none.png)
+
+## 3.制作了已经配置好环境的docker容器
+
+使用以下命令拉取镜像
 
 ```
-root@a47fedc193b8:/# whereis ping
-ping: /usr/bin/ping
-root@a47fedc193b8:/# ls -l /usr/bin/ping
--rwxr-xr-x 1 root root 72776 Jan 30  2020 /usr/bin/ping
+docker pull tremb1e/os_sec_experiment:ex1
 ```
 
-![ls_ping](./images/ls_ping.png)
+使用以下命令运行直接镜像
 
-### 2.4 删除ping命令的权能
+```
+docker run -it tremb1e/os_sec_experiment:ex1 /bin/bash
+```
 
+使用教程如下
 
+### 3.1 直接运行镜像
 
+使用以下命令直接运行镜像
 
+```
+docker run -it tremb1e/os_sec_experiment:ex1 /bin/bash
+```
 
+![docker_run](./images/docker_run.png)
 
+在当前目录下有两个脚本
 
+![ls](./images/ls.png)
 
+### 3.2 运行脚本
 
+运行后会将拥有uid的程序路径写入“/tmp/pro_list”文件中
 
+```
+./auto_del_uid.sh
+```
 
+### 3.3 切换用户，自动运行login.sh，实现用户登录只能运行特定程序
 
+- os_ping 用户只能运行 ping 命令
+- os_passwd 用户只能运行 passwd 命令
+- os_none 用户无法运行任何命令
 
+#### 3.3.1 os_ping 用户只能运行 ping 命令
 
+![os_ping](./images/os_ping.png)
 
+#### 3.3.2 os_passwd 用户只能运行 passwd 命令
+
+![os_passwd](./images/os_passwd.png)
+
+#### 3.3.3 os_none 用户无法运行任何命令
+
+![os_none](./images/os_none.png)
 
 
