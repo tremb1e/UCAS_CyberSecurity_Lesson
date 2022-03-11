@@ -56,7 +56,7 @@ $ man capabilities
 
 7.CAP_CHOWN                                         系统调用：chown，对文件的UID和GID做任意的修改
 
-8.CAP_DAC_OVERRIDE                                  忽略对文件的DAC访问限制
+8.CAP_DAC_OVERRIDE                                  忽略文件读取、写入和执行权限检查
 
 9.CAP_DAC_READ_SEARCH                               忽略DAC中对文件和目录的读、搜索权限
 
@@ -86,7 +86,7 @@ $ man capabilities
 
 22.CAP_NET_BROADCAST                                允许网络广播和多播访问
 
-23.CAP_NET_RAW                                      系统调用：socket，允许使用广元市套接字，原始套接字编程可以接收到本机网卡上的数据帧或者数据包，对监控网络流量和分析有很大的作用。
+23.CAP_NET_RAW                                      系统调用：socket，允许使用原始套接字，原始套接字编程可以接收到本机网卡上的数据帧或者数据包，对监控网络流量和分析有很大的作用。
 
 24.CAP_PERFMON (since Linux 5.8)                    采用各种性能监控机制，包括：* call perf_event_open(2);* 采用具有性能影响的各种 BPF 操作。Linux 5.8 中添加了此功能，以将性能监控功能与重载的 CAP_SYS_ADMIN 功能分开。
 
@@ -144,7 +144,7 @@ $ man capabilities
 
 - 新建三个用户：os_ping,os_passwd,os_none
 - 运行auto_del_uid.sh脚本，找出并清除所有程序的权能
-- 运行login.sh脚本，实现三个用户登录后可以执行不同的命令
+- 在切换用户登录前运行login.sh脚本，实现三个用户登录后只可以执行不同的命令
 - os_ping用户登录后只可以执行ping命令
 - os_passwd用户登录后只可以执行passwd命令
 - os_none登录后不可以执行任何命令
