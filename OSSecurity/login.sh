@@ -18,7 +18,7 @@ elif [ "$PAM_USER" == "os_passwd" ]; then
     delcap
      # CAP_CHOWN ,CAP_DAC_OVERRIDE ,CAP_FOWNER
      setcap cap_chown,cap_dac_override,cap_fowner+eip /usr/bin/passwd
-     echo "os_ping用户只可以使用ping命令"
+     echo "os_passwd用户只可以使用passwd命令"
 else
     delcap
     echo "非特定用户登录，无任何权限"
