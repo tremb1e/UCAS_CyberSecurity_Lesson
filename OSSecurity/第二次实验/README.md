@@ -41,13 +41,21 @@ Isovalent 首席技术官兼联合创始人、eBPF 管理委员会主席 Thomas 
 - Sandboxed programs in the Linux kernel
 - eBPF allows you to create programmable trace points in the kernel
 - Programs can be attached to:
+
 ○ Network Interfaces
+
 ○ Kernel functions
+
 ○ User mode functions
+
 - eBPF programs are guaranteed to be:
+
 ○ Safe
+
 ○ Efficient
+
 ○ Portable
+
 
 ## 3.eBPF Rootkit相比传统Rootkit优势
 
