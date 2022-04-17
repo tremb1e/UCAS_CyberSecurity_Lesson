@@ -62,11 +62,17 @@ Isovalent 首席技术官兼联合创始人、eBPF 管理委员会主席 Thomas 
 - 不会使内核崩溃
 - 最小的性能开销
 - eBPF的安全并不是绝对的安全
+
 ○ 内核中存在一个Kernel eBPF Verifier
+
 ○ 只有特权进程才可以执行 bpf 系统调用
+
 ○ BPF 程序不能包含无限循环
+
 ○ BPF 程序不能导致内核崩溃
+
 ○ BPF 程序必须在有限时间内完成
+
 
 ## 4.eBPF Rootkit效果示例
 
