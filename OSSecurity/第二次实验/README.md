@@ -42,7 +42,7 @@ Isovalent 首席技术官兼联合创始人、eBPF 管理委员会主席 Thomas 
 
 ### eBPF可以在Linux系统的各个地方插桩，在执行到指定位置时，执行用户自定的代码，实现数据的搜集和修改。
 
-- eBPF (extended Berkeley Packet Filtering)
+- eBPF (extended Berkeley Packet Filter)
 - Sandboxed programs in the Linux kernel
 - eBPF allows you to create programmable trace points in the kernel
 - Programs can be attached to:
